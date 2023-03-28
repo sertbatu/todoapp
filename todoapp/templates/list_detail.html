@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex gap-2 align-items-center my-4">
+  <div>
+    <h1>{{ list.title }}</h1>
+    {% if list.public %}
+    <h6>Shared by <a href="{{ url_for('web.user', username=list.owner.username) }}">{{ list.owner.username }}</a></h6>
+    {% endif %}
+  </div>
+  <div>
+  {% if current_user.id == list.owner.id %}
+    {% if list.public %}
+      <form method="post" action="{{ url_for('web.toggle_public', list_id=list.id) }}">
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?');">
+          Make this list private
+        </button>
+      </form>
+    {% else %}
+      <form method="post" action="{{ url_for('web.toggle_public', list_id=list.id) }}">
+        <button type="submit" class="btn btn-warning" onclick="return confirm('Are you sure?');">
+          Make this list public
+        </button>
+      </form>
+    {% endif %}
+  {% endif %}
+  </div>
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Description</th>
+      <th scope="col">Deadline</th>
+      <th scope="col">Status</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in list.items %}
+    <tr class="{{ 'bg-danger' if item.status == 'Completed' else 'bg-warning' if item.status == 'In Progress' else 'bg-success' }}">
+      <td>
+        {% if item.completed %}
+        <s>{{ item.description }}</s>
+        {% else %}
+            {{ item.description }}
+        {% endif %}
+      </td>
+      <td>{{ item.deadline.strftime('%Y-%m-%d %H:%M') if item.deadline }}</td>
+      <td>{{ item.status }}</td>
+      <td>
+        {% if item.list.user_id == current_user.id and item.status != 'Completed' %}
+          <a href="{{ url_for('web.edit_item', item_id=item.id) }}" class="btn btn-sm btn-info">Edit</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<hr>
+
+  {% if list.user_id == current_user.id %}
+    <h2>Add a new item</h2>
+
+    <form action="{{ url_for('web.list', list_id=list.id) }}" method="post">
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        {{ form.name.label }} {{ form.name(size=50, class="form-control") }}
+        {% for error in form.name.errors %}
+          <span class="text-danger">{{ error }}</span>
+        {% endfor %}
+      </div>
+      <div class="form-group">
+        {{ form.deadline.label }} {{ form.deadline(class="form-control") }}
+        {% for error in form.deadline.errors %}
+          <span class="text-danger">{{ error }}</span>
+        {% endfor %}
+      </div>
+      <div class="form-group">
+        {{ form.status.label }} {{ form.status(class="form-control") }}
+        {% for error in form.status.errors %}
+          <span class="text-danger">{{ error }}</span>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn btn-primary">Add item</button>
+    </form>
+
+  {% else %}
+    {% if current_user.is_authenticated %}
+    {% if list.favorited_by(current_user) %}
+      <form method="post" action="{{ url_for('web.toggle_favorite', list_id=list.id) }}">
+        <button type="submit" class="btn btn-warning">Unfavorite</button>
+      </form>
+    {% else %}
+      <form method="post" action="{{ url_for('web.toggle_favorite', list_id=list.id) }}">
+        <button type="submit" class="btn btn-success">Favorite</button>
+      </form>
+    {% endif %}
+  {% endif %}
+
+{% endif %}
+{% endblock %}

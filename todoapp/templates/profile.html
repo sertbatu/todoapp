@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container">
+    <h1>Profile - {{ user.username }}</h1>
+    <hr>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-success">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <h3>My To-Do Lists</h3>
+      {% for todo_list in user.lists %}
+        {% if todo_list.public or (current_user and current_user.id == todo_list.owner.id) %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">{{ todo_list.title }}</h5>
+              <div class="d-flex gap-2">
+
+              <a href="{{ url_for('web.list', list_id=todo_list.id) }}" class="btn btn-primary">View To-Do List</a>
+
+              {% if current_user and current_user.id == todo_list.owner.id %}
+                <form method="post" action="{{ url_for('web.delete_list', list_id=todo_list.id) }}">
+                  <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this list?')">
+                    Delete List
+                  </button>
+                </form>
+              {% endif %}
+              </div>
+
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+  </div>
+{% endblock %}

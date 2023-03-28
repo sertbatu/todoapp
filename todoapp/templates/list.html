@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container">
+    <h1>{{ to_do_list.title }}</h1>
+    <p>{{ to_do_list.description }}</p>
+    <hr>
+    <form method="post" action="{{ url_for('web.add_task', to_do_list_id=to_do_list.id) }}">
+      <div class="form-group">
+        <label for="task_description">New Task</label>
+        <input type="text" class="form-control" id="task_description" name="task_description" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Task</button>
+    </form>
+    <hr>
+    <ul class="list-group">
+      {% for task in tasks %}
+        <li class="list-group-item{% if task.completed %} list-group-item-success{% endif %}">
+          {{ task.description }}
+          {% if not task.completed %}
+            <a href="{{ url_for('web.complete_task', to_do_list_id=to_do_list.id, task_id=task.id) }}" class="btn btn-sm btn-success float-right">Complete</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

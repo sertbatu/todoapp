@@ -1,0 +1,13 @@
+python-dotenv
+Flask
+Flask_Login
+flask_sqlalchemy
+Flask_WTF
+Flask-Migrate
+gunicorn
+SQLAlchemy
+Werkzeug
+WTForms
+mysqlclient
+pymysql
+wtforms_components

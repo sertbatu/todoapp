@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container">
+    <h1>An unexpected error has occurred</h1>
+    <hr>
+    <p>Please contact your Administrator. Sorry for the inconvenience!</p>
+    <a href="{{ url_for('web.index') }}" class="btn btn-primary">Back to Home Page</a>
+  </div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container">
+    <h1>My Favorites</h1>
+    <hr>
+
+    {% for to_do_list in favorite_lists %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ to_do_list.title }}</h5>
+          <div class="d-flex gap-2">
+            <a href="{{ url_for('web.list', list_id=to_do_list.id) }}" class="btn btn-primary">View To-Do List</a>
+            <form method="post" action="{{ url_for('web.toggle_favorite', list_id=to_do_list.id) }}">
+              <button type="submit" class="btn btn-warning">Unfavorite</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
